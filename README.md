@@ -110,7 +110,7 @@ The tray app also serves a web interface at **http://localhost:8765**. To open i
 | Channels | Search, filter by list, look up and add channels (with a WAV option), edit or delete one or several, and open a channel on YouTube |
 | Waiting | Every video waiting to download, shown by title, with its list and format. Tick videos and **Delete selected** to remove them from the lists so they aren't downloaded |
 | Schedule | What the smart schedule learned for each channel, and which channels are in an upload window right now |
-| Failed | Retry videos that kept failing, which puts them back in their list, or remove them |
+| Failed | Retry videos that kept failing, which puts them back in their list, remove them, or **Export list** to save the whole failed list as a text file (`failed-YYYY-MM-DD.txt`) |
 | Settings | The main settings from `config.yaml` (downloads at once, free-space limit, H.264, quiet hours, check times). Save writes only the changed lines, so your comments stay. A backup of the old file goes in `config_backups\`, and the last 20 are kept. Restart the tray app to apply changes |
 | Log | The live log, with a filter |
 

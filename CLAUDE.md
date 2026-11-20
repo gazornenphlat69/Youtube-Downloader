@@ -31,8 +31,16 @@ python ytdl_tray.py                      # tray app + web UI; use pythonw to hid
 python channels.py                       # Tk window
 python -m py_compile *.py                # quick syntax check before handing anything over
 ```
-- There's no test suite. Test with throwaway copies under a temp or scratch folder, never
-  the user's real files.
+- **Tests** live in `tests/` (standard-library `unittest`, no extra packages). Run them all from
+  the project folder:
+  ```
+  python -m unittest discover -s tests -t .
+  ```
+  They use temp folders, never the user's real files. `tests/test_export_ui.py` is a browser
+  test (Playwright). It needs `pip install playwright`, and it uses Playwright's own Chromium
+  (`playwright install chromium`) or the one in `YTDL_CHROME`. It skips itself when neither is
+  available. Run it alone with `YTDL_CHROME=/path/to/chrome python -m unittest tests.test_export_ui`.
+- Test with throwaway copies under a temp or scratch folder, never the user's real files.
 - **FlexGet edits:** copy a real `config.yml`, then add, edit and delete through
   `FlexgetConfig`, undo the changes, and assert the file is **byte-identical** to the original.
 - **Web UI:** run `web_server.start(FakeRunner(), ...)` with a stub runner that has

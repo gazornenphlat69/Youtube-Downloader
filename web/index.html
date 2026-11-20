@@ -329,6 +329,7 @@
     <div class="toolbar">
       <label class="toggle"><input type="checkbox" id="fa-all"><span class="track"></span><span>Select all</span></label>
       <div class="grow"></div>
+      <button class="btn" id="fa-export" disabled>Export list</button>
       <button class="btn danger" id="fa-remove" disabled>Remove</button>
       <button class="btn primary" id="fa-retry" disabled>Retry</button>
     </div>
@@ -753,6 +754,7 @@ async function loadFailed() {
 function renderFailed() {
   fsel = new Set([...fsel].filter(u => failed.some(r => r.url === u)));
   $("#fa-retry").disabled = $("#fa-remove").disabled = !fsel.size;
+  $("#fa-export").disabled = !failed.length;
   $("#fa-all").checked = failed.length && fsel.size === failed.length;
   if (!failed.length) { $("#fa-list").innerHTML = `<div class="card empty">Nothing has failed. 🎉</div>`; return; }
   $("#fa-list").innerHTML = failed.map(r => `
@@ -768,6 +770,18 @@ $("#fa-list").addEventListener("click", e => {
   const u = item.dataset.url; fsel.has(u) ? fsel.delete(u) : fsel.add(u); renderFailed();
 });
 $("#fa-all").addEventListener("change", e => { fsel = e.target.checked ? new Set(failed.map(r => r.url)) : new Set(); renderFailed(); });
+// Saves the whole failed list as a plain .txt file, one video per line:
+// date, list name and link, separated by tabs (same layout as failed.txt).
+$("#fa-export").addEventListener("click", () => {
+  const text = failed.map(r => `${r.when}\t${r.list}\t${r.url}`).join("\n") + "\n";
+  const blob = new Blob([text], { type: "text/plain;charset=utf-8" });
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = `failed-${new Date().toISOString().slice(0, 10)}.txt`;
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+  toast(`Exported ${failed.length} failed video(s)`);
+});
 $("#fa-retry").addEventListener("click", async () => {
   try { const r = await api("/api/failed/retry", "POST", { urls: [...fsel] });
     toast(`Re-queued ${r.requeued} video(s)`); fsel.clear(); loadFailed(); loadStatus(); }
